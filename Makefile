@@ -3,9 +3,10 @@
 STATIC=libhwsunxi.a
 DYNAMIC=libhwsunxi.so
 
-CC = gcc
-AR = ar
-RANLIB = ranlib
+CROSS =
+CC = $(CROSS)gcc
+AR = $(CROSS)ar
+RANLIB = $(CROSS)ranlib
 CFLAGS = -O2 -D_GNU_SOURCE -Wformat=2 -Wall -Wextra -Winline -I. -pipe -fPIC
 LIBS = 
 
