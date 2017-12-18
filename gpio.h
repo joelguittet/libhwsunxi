@@ -1,15 +1,15 @@
 /*
  * SUNXI GPIO library interface
  * 
- * Example to read input pin GPA0:
+ * Example to read input pin PA0:
  * sunxi_gpio_init();
- * sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN(A, 0), SUNXI_GPIO_INPUT);
- * unsigned int value = sunxi_gpio_input(SUNXI_GPIO_PIN(A, 0));
+ * sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN('A', 0), SUNXI_GPIO_INPUT);
+ * unsigned int value = sunxi_gpio_input(SUNXI_GPIO_PIN('A', 0));
  * 
- * Example to write output pin GPA0:
+ * Example to write output pin PA0:
  * sunxi_gpio_init();
- * sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN(A, 0), SUNXI_GPIO_OUTPUT);
- * sunxi_gpio_output(SUNXI_GPIO_PIN(A, 0), 1);
+ * sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN('A', 0), SUNXI_GPIO_OUTPUT);
+ * sunxi_gpio_output(SUNXI_GPIO_PIN('A', 0), 1);
  */
 
 #ifndef SUNXI_GPIO_H_
