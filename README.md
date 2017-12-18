@@ -3,7 +3,7 @@ libhwsunxi
 
 SUNXI Hardware Abstraction Interface Library.
 
-The following interface are currently supported:
+The following interfaces are currently supported:
 * gpio
 
 
@@ -26,7 +26,7 @@ Build static library libhwsunxi.a:
 Using
 --
 
-###GPIO
+### GPIO
 
 Example to read input pin PA0:
 
