@@ -5,6 +5,7 @@ SUNXI Hardware Abstraction Interface Library.
 
 The following interfaces are currently supported:
 * gpio
+* spi
 
 
 Building
@@ -51,6 +52,15 @@ Example to write output pin PA0 with SUNXI_GPIO_PIN_PA0:
 	sunxi_gpio_init();
 	sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN_PA0, SUNXI_GPIO_OUTPUT);
 	sunxi_gpio_output(SUNXI_GPIO_PIN_PA0, 1);
+
+### SPI
+
+Example to perform an exchange on SPI interface:
+
+	int fd = sunxi_spi_open("/dev/spidev2.0");
+	sunxi_spi_write_max_speed(fd, 1000000);
+	sunxi_spi_transfer(fd, tx, rx, len);
+	sunxi_spi_close(fd);
 
 
 Contributing
