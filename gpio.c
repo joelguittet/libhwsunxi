@@ -14,7 +14,7 @@
 /****************************************************************************************/
 
 /* SUNXI GPIO control IO base address */
-#define SUNXI_GPIO_SW_PORTC_IO_BASE             0x01c20800
+#define SUNXI_GPIO_IO_BASE                      0x01c20800
 
 /* Macros used to configure GPIOs */
 #define SUNXI_GPIO_BANK(pin)                    ((pin) >> 5)
@@ -78,8 +78,8 @@ int sunxi_gpio_init() {
   /* Map to device */
   page_size = sysconf(_SC_PAGESIZE);
   page_mask = (~(page_size-1));
-  addr_start = SUNXI_GPIO_SW_PORTC_IO_BASE & page_mask;
-  addr_offset = SUNXI_GPIO_SW_PORTC_IO_BASE & ~page_mask;
+  addr_start = SUNXI_GPIO_IO_BASE & page_mask;
+  addr_offset = SUNXI_GPIO_IO_BASE & ~page_mask;
   pc = (void *)mmap(0, page_size * 2, PROT_READ|PROT_WRITE, MAP_SHARED, fd, addr_start);
   if (pc == MAP_FAILED) {
     return -errno;
