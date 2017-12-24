@@ -28,17 +28,29 @@ Using
 
 ### GPIO
 
-Example to read input pin PA0:
+Example to read input pin PA0 with SUNXI_GPIO_PIN macro:
 
 	sunxi_gpio_init();
 	sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN('A', 0), SUNXI_GPIO_INPUT);
 	unsigned int value = sunxi_gpio_input(SUNXI_GPIO_PIN('A', 0));
 
-Example to write output pin PA0:
+Example to read input pin PA0 with SUNXI_GPIO_PIN_PA0 macro:
+
+	sunxi_gpio_init();
+	sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN_PA0, SUNXI_GPIO_INPUT);
+	unsigned int value = sunxi_gpio_input(SUNXI_GPIO_PIN_PA0);
+
+Example to write output pin PA0 with SUNXI_GPIO_PIN:
 
 	sunxi_gpio_init();
 	sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN('A', 0), SUNXI_GPIO_OUTPUT);
 	sunxi_gpio_output(SUNXI_GPIO_PIN('A', 0), 1);
+
+Example to write output pin PA0 with SUNXI_GPIO_PIN_PA0:
+
+	sunxi_gpio_init();
+	sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN_PA0, SUNXI_GPIO_OUTPUT);
+	sunxi_gpio_output(SUNXI_GPIO_PIN_PA0, 1);
 
 
 Contributing

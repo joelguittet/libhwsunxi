@@ -1,16 +1,6 @@
-/*
- * SUNXI GPIO library interface
- * 
- * Example to read input pin PA0:
- * sunxi_gpio_init();
- * sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN('A', 0), SUNXI_GPIO_INPUT);
- * unsigned int value = sunxi_gpio_input(SUNXI_GPIO_PIN('A', 0));
- * 
- * Example to write output pin PA0:
- * sunxi_gpio_init();
- * sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN('A', 0), SUNXI_GPIO_OUTPUT);
- * sunxi_gpio_output(SUNXI_GPIO_PIN('A', 0), 1);
- */
+/****************************************************************************************/
+/* SUNXI GPIO library interface                                                         */
+/****************************************************************************************/
 
 /****************************************************************************************/
 /* Includes                                                                             */
@@ -30,13 +20,13 @@
 /****************************************************************************************/
 
 /* SUNXI GPIO control IO base address */
-#define SUNXI_GPIO_SW_PORTC_IO_BASE           0x01c20800
+#define SUNXI_GPIO_SW_PORTC_IO_BASE             0x01c20800
 
 /* Macros used to configure GPIOs */
-#define SUNXI_GPIO_BANK(pin)                  ((pin) >> 5)
-#define SUNXI_GPIO_NUM(pin)                   ((pin) & 0x1F)
-#define SUNXI_GPIO_CFG_INDEX(pin)             (((pin) & 0x1F) >> 3)
-#define SUNXI_GPIO_CFG_OFFSET(pin)            ((((pin) & 0x1F) & 0x7) << 2)
+#define SUNXI_GPIO_BANK(pin)                    ((pin) >> 5)
+#define SUNXI_GPIO_NUM(pin)                     ((pin) & 0x1F)
+#define SUNXI_GPIO_CFG_INDEX(pin)               (((pin) & 0x1F) >> 3)
+#define SUNXI_GPIO_CFG_OFFSET(pin)              ((((pin) & 0x1F) & 0x7) << 2)
 
 /* SUNXI GPIO Bank */
 struct sunxi_gpio_bank {
@@ -113,7 +103,7 @@ int sunxi_gpio_init() {
 
 /**
  * Set pin configuration
- * @param pin Expected pin, see SUNXI_GPIO_PIN macro
+ * @param pin Expected pin, see SUNXI_GPIO_PIN macros
  * @param val Expected function, SUNXI_GPIO_INPUT or SUNXI_GPIO_OUTPUT
  * @return 0 if the function succeeds, error code otherwise
  */
@@ -141,7 +131,7 @@ int sunxi_gpio_set_cfgpin(unsigned int pin, unsigned int val) {
 
 /**
  * Get pin configuration
- * @param pin Expected pin, see SUNXI_GPIO_PIN macro
+ * @param pin Expected pin, see SUNXI_GPIO_PIN macros
  * @return Pin function if the function succeeds, error code otherwise
  */
 int sunxi_gpio_get_cfgpin(unsigned int pin) {
@@ -165,7 +155,7 @@ int sunxi_gpio_get_cfgpin(unsigned int pin) {
 
 /**
  * Get pin input value
- * @param pin Expected pin, see SUNXI_GPIO_PIN macro
+ * @param pin Expected pin, see SUNXI_GPIO_PIN macros
  * @return Pin input value if the function succeeds, error code otherwise
  */
 int sunxi_gpio_input(unsigned int pin) {
@@ -188,7 +178,7 @@ int sunxi_gpio_input(unsigned int pin) {
 
 /**
  * Set pin output value
- * @param pin Expected pin, see SUNXI_GPIO_PIN macro
+ * @param pin Expected pin, see SUNXI_GPIO_PIN macros
  * @param val Expected pin value, 0 or 1
  * @return 0 if the function succeeds, error code otherwise
  */
