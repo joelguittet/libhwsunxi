@@ -6,12 +6,12 @@
 /* Includes                                                                             */
 /****************************************************************************************/
 
+#include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <sys/mman.h>
-#include <unistd.h>
-#include <errno.h>
 #include "gpio.h"
 
 
@@ -61,7 +61,7 @@ static unsigned int sunxi_gpio_base_address = 0;
 
 
 /****************************************************************************************/
-/* Global variables                                                                     */
+/* Exported functions                                                                   */
 /****************************************************************************************/
 
 /**
