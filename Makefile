@@ -10,7 +10,7 @@ RANLIB = $(CROSS)ranlib
 CFLAGS = -O2 -D_GNU_SOURCE -Wformat=2 -Wall -Wextra -Winline -I. -pipe -fPIC
 LIBS = 
 
-SRC = gpio.c spi.c
+SRC = gpio.c pwm.c spi.c
 
 OBJ = $(SRC:.c=.o)
 

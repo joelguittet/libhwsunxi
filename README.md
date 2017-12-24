@@ -5,6 +5,7 @@ SUNXI Hardware Abstraction Interface Library.
 
 The following interfaces are currently supported:
 * gpio
+* pwm
 * spi
 
 
@@ -52,6 +53,16 @@ Example to write output pin PA0 with SUNXI_GPIO_PIN_PA0:
 	sunxi_gpio_init();
 	sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN_PA0, SUNXI_GPIO_OUTPUT);
 	sunxi_gpio_output(SUNXI_GPIO_PIN_PA0, 1);
+
+### PWM
+
+Example to generate a 1kHz signal with 30% duty cycle on the first PWM channel:
+
+	sunxi_pwm_init();
+	sunxi_pwm_disable(SUNXI_PWM_CH0);
+	sunxi_pwm_set_polarity(SUNXI_PWM_CH0, SUNXI_PWM_POLARITY_NORMAL);
+	sunxi_pwm_set_config(SUNXI_PWM_CH0, 1000000, 300000);
+	sunxi_pwm_enable(SUNXI_PWM_CH0);
 
 ### SPI
 
