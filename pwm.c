@@ -24,8 +24,8 @@
 
 /* SUNXI PWM Registers */
 struct sunxi_pwm_reg {
-  unsigned int ctrl;
-  unsigned int ch_period[2];
+  volatile unsigned int ctrl;
+  volatile unsigned int ch_period[2];
 };
 
 
@@ -33,8 +33,8 @@ struct sunxi_pwm_reg {
 /* Global variables                                                                     */
 /****************************************************************************************/
 
-/* SUNXI PWM base address */
-static unsigned int sunxi_pwm_base_address = 0;
+/* SUNXI PWM registers */
+static volatile struct sunxi_pwm_reg *sunxi_pwm_registers = NULL;
 
 
 /****************************************************************************************/
@@ -63,14 +63,13 @@ int sunxi_pwm_init() {
   page_mask = (~(page_size-1));
   addr_start = SUNXI_PWM_IO_BASE & page_mask;
   addr_offset = SUNXI_PWM_IO_BASE & ~page_mask;
-  pc = (void *)mmap(0, page_size * 2, PROT_READ|PROT_WRITE, MAP_SHARED, fd, addr_start);
+  pc = (void *)mmap(NULL, (((sizeof(struct sunxi_pwm_reg) + addr_offset) / page_size) + 1) * page_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, addr_start);
   if (pc == MAP_FAILED) {
     return -errno;
   }
 
-  /* Retrieve base address used later in this library */
-  sunxi_pwm_base_address = (unsigned int)pc;
-  sunxi_pwm_base_address += addr_offset; 
+  /* Retrieve registers address used later in this library */
+  sunxi_pwm_registers = (struct sunxi_pwm_reg *)(pc + addr_offset);
 
   /* Close device */
   close(fd);
@@ -87,16 +86,15 @@ int sunxi_pwm_init() {
 int sunxi_pwm_set_polarity(unsigned int ch, unsigned int pol) {
   
   /* Check if initialization has been performed */
-  if (sunxi_pwm_base_address == 0) {
+  if (sunxi_pwm_registers == NULL) {
     return -EPERM;
   }
 
   /* Set PWM polarity */
-  struct sunxi_pwm_reg *reg = (struct sunxi_pwm_reg *)sunxi_pwm_base_address;
   if (pol == SUNXI_PWM_POLARITY_NORMAL)
-    reg->ctrl |= SUNXI_PWM_ACT_STATE(ch);
+    sunxi_pwm_registers->ctrl |= SUNXI_PWM_ACT_STATE(ch);
   else
-    reg->ctrl &= ~SUNXI_PWM_ACT_STATE(ch);
+    sunxi_pwm_registers->ctrl &= ~SUNXI_PWM_ACT_STATE(ch);
 
   return 0;
 }
@@ -114,7 +112,7 @@ int sunxi_pwm_set_config(unsigned int ch, __u64 period_ns, __u64 duty_ns) {
   unsigned int prescaler_table[] = {120, 180, 240, 360, 480, 0, 0, 0, 12000, 24000, 36000, 48000, 72000, 0, 0, 0};
     
   /* Check if initialization has been performed */
-  if (sunxi_pwm_base_address == 0) {
+  if (sunxi_pwm_registers == NULL) {
     return -EPERM;
   }
 
@@ -136,13 +134,12 @@ int sunxi_pwm_set_config(unsigned int ch, __u64 period_ns, __u64 duty_ns) {
   dty = div;
   
   /* Set PWM period and duty cycle */
-  struct sunxi_pwm_reg *reg = (struct sunxi_pwm_reg *)sunxi_pwm_base_address;
-  clk_gating = reg->ctrl & SUNXI_PWM_CLK_GATING(ch);
-  reg->ctrl &= ~SUNXI_PWM_CLK_GATING(ch);
-  reg->ctrl &= ~SUNXI_PWM_PRESCALAR(ch, 0x0F);
-  reg->ctrl |= SUNXI_PWM_PRESCALAR(ch, prescaler);
-  reg->ch_period[ch] = ((prd - 1) << 16) + (dty & 0xFFFF);
-  if (clk_gating != 0) reg->ctrl |= SUNXI_PWM_CLK_GATING(ch);
+  clk_gating = sunxi_pwm_registers->ctrl & SUNXI_PWM_CLK_GATING(ch);
+  sunxi_pwm_registers->ctrl &= ~SUNXI_PWM_CLK_GATING(ch);
+  sunxi_pwm_registers->ctrl &= ~SUNXI_PWM_PRESCALAR(ch, 0x0F);
+  sunxi_pwm_registers->ctrl |= SUNXI_PWM_PRESCALAR(ch, prescaler);
+  sunxi_pwm_registers->ch_period[ch] = ((prd - 1) << 16) + (dty & 0xFFFF);
+  if (clk_gating != 0) sunxi_pwm_registers->ctrl |= SUNXI_PWM_CLK_GATING(ch);
   
   return 0;
 } 
@@ -155,14 +152,13 @@ int sunxi_pwm_set_config(unsigned int ch, __u64 period_ns, __u64 duty_ns) {
 int sunxi_pwm_enable(unsigned int ch) {
   
   /* Check if initialization has been performed */
-  if (sunxi_pwm_base_address == 0) {
+  if (sunxi_pwm_registers == NULL) {
     return -EPERM;
   }
 
   /* Enable PWM */
-  struct sunxi_pwm_reg *reg = (struct sunxi_pwm_reg *)sunxi_pwm_base_address;
-  reg->ctrl |= SUNXI_PWM_EN(ch);
-  reg->ctrl |= SUNXI_PWM_CLK_GATING(ch);
+  sunxi_pwm_registers->ctrl |= SUNXI_PWM_EN(ch);
+  sunxi_pwm_registers->ctrl |= SUNXI_PWM_CLK_GATING(ch);
 
   return 0;
 }
@@ -175,14 +171,13 @@ int sunxi_pwm_enable(unsigned int ch) {
 int sunxi_pwm_disable(unsigned int ch) {
   
   /* Check if initialization has been performed */
-  if (sunxi_pwm_base_address == 0) {
+  if (sunxi_pwm_registers == NULL) {
     return -EPERM;
   }
 
   /* Disable PWM */
-  struct sunxi_pwm_reg *reg = (struct sunxi_pwm_reg *)sunxi_pwm_base_address;
-  reg->ctrl &= ~SUNXI_PWM_EN(ch);
-  reg->ctrl &= ~SUNXI_PWM_CLK_GATING(ch);
+  sunxi_pwm_registers->ctrl &= ~SUNXI_PWM_EN(ch);
+  sunxi_pwm_registers->ctrl &= ~SUNXI_PWM_CLK_GATING(ch);
 
   return 0;
 }

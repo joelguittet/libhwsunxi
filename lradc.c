@@ -57,7 +57,6 @@ int sunxi_lradc_init() {
   int fd;
   unsigned int page_size, page_mask;
   unsigned int addr_start, addr_offset;
-  unsigned int base_address;
   void *pc;
 
   /* Open device */
@@ -77,9 +76,7 @@ int sunxi_lradc_init() {
   }
 
   /* Retrieve registers address used later in this library */
-  base_address = (unsigned int)pc;
-  base_address += addr_offset;
-  sunxi_lradc_registers = (struct sunxi_lradc_reg *)base_address;
+  sunxi_lradc_registers = (struct sunxi_lradc_reg *)(pc + addr_offset);
 
   /* Close device */
   close(fd);

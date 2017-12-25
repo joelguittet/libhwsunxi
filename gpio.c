@@ -24,25 +24,25 @@
 
 /* SUNXI GPIO Bank */
 struct sunxi_gpio_bank {
-  unsigned int cfg[4];
-  unsigned int dat;
-  unsigned int drv[2];
-  unsigned int pull[2];
+  volatile unsigned int cfg[4];
+  volatile unsigned int dat;
+  volatile unsigned int drv[2];
+  volatile unsigned int pull[2];
 };
 
 /* SUNXI GPIO Interrupt control */
 struct sunxi_gpio_int {
-  unsigned int cfg[3];
-  unsigned int ctl;
-  unsigned int sta;
-  unsigned int deb;
+  volatile unsigned int cfg[3];
+  volatile unsigned int ctl;
+  volatile unsigned int sta;
+  volatile unsigned int deb;
 };
 
 /* SUNXI GPIO Registers */
 struct sunxi_gpio_reg {
-  struct sunxi_gpio_bank gpio_bank[9];
-  unsigned char res[0xbc];
-  struct sunxi_gpio_int gpio_int;
+  volatile struct sunxi_gpio_bank gpio_bank[9];
+  volatile unsigned char res[0xbc];
+  volatile struct sunxi_gpio_int gpio_int;
 };
 
 
@@ -50,8 +50,8 @@ struct sunxi_gpio_reg {
 /* Global variables                                                                     */
 /****************************************************************************************/
 
-/* SUNXI GPIO base address */
-static unsigned int sunxi_gpio_base_address = 0;
+/* SUNXI GPIO registers */
+static volatile struct sunxi_gpio_reg *sunxi_gpio_registers = NULL;
 
 
 /****************************************************************************************/
@@ -80,14 +80,13 @@ int sunxi_gpio_init() {
   page_mask = (~(page_size-1));
   addr_start = SUNXI_GPIO_IO_BASE & page_mask;
   addr_offset = SUNXI_GPIO_IO_BASE & ~page_mask;
-  pc = (void *)mmap(0, page_size * 2, PROT_READ|PROT_WRITE, MAP_SHARED, fd, addr_start);
+  pc = (void *)mmap(NULL, (((sizeof(struct sunxi_gpio_reg) + addr_offset) / page_size) + 1) * page_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, addr_start);
   if (pc == MAP_FAILED) {
     return -errno;
   }
 
-  /* Retrieve base address used later in this library */
-  sunxi_gpio_base_address = (unsigned int)pc;
-  sunxi_gpio_base_address += addr_offset; 
+  /* Retrieve registers address used later in this library */
+  sunxi_gpio_registers = (struct sunxi_gpio_reg *)(pc + addr_offset);
 
   /* Close device */
   close(fd);
@@ -109,12 +108,12 @@ int sunxi_gpio_set_cfgpin(unsigned int pin, unsigned int val) {
   unsigned int offset = SUNXI_GPIO_CFG_OFFSET(pin);
 
   /* Check if initialization has been performed */
-  if (sunxi_gpio_base_address == 0) {
+  if (sunxi_gpio_registers == NULL) {
     return -EPERM;
   }
 
   /* Set pin configuration */
-  struct sunxi_gpio_bank *pio = &((struct sunxi_gpio_reg *)sunxi_gpio_base_address)->gpio_bank[bank];
+  volatile struct sunxi_gpio_bank *pio = &(sunxi_gpio_registers->gpio_bank[bank]);
   cfg = *(&pio->cfg[0] + index);
   cfg &= ~(0xf << offset);
   cfg |= val << offset;
@@ -136,12 +135,12 @@ int sunxi_gpio_get_cfgpin(unsigned int pin) {
   unsigned int offset = SUNXI_GPIO_CFG_OFFSET(pin);
   
   /* Check if initialization has been performed */
-  if (sunxi_gpio_base_address == 0) {
+  if (sunxi_gpio_registers == NULL) {
     return -EPERM;
   }
   
   /* Get pin configuration */
-  struct sunxi_gpio_bank *pio = &((struct sunxi_gpio_reg *)sunxi_gpio_base_address)->gpio_bank[bank];
+  volatile struct sunxi_gpio_bank *pio = &(sunxi_gpio_registers->gpio_bank[bank]);
   cfg = *(&pio->cfg[0] + index);
   cfg >>= offset;
   return (cfg & 0xf);
@@ -159,12 +158,12 @@ int sunxi_gpio_input(unsigned int pin) {
   unsigned int num = SUNXI_GPIO_NUM(pin);
   
   /* Check if initialization has been performed */
-  if (sunxi_gpio_base_address == 0) {
+  if (sunxi_gpio_registers == NULL) {
     return -EPERM;
   }
   
   /* Get pin value */
-  struct sunxi_gpio_bank *pio = &((struct sunxi_gpio_reg *)sunxi_gpio_base_address)->gpio_bank[bank];
+  volatile struct sunxi_gpio_bank *pio = &(sunxi_gpio_registers->gpio_bank[bank]);
   dat = *(&pio->dat);
   dat >>= num;
   return (dat & 0x1);
@@ -182,12 +181,12 @@ int sunxi_gpio_output(unsigned int pin, unsigned int val) {
   unsigned int num = SUNXI_GPIO_NUM(pin);
   
   /* Check if initialization has been performed */
-  if (sunxi_gpio_base_address == 0) {
+  if (sunxi_gpio_registers == NULL) {
     return -EPERM;
   }
   
   /* Set pin value */
-  struct sunxi_gpio_bank *pio = &((struct sunxi_gpio_reg *)sunxi_gpio_base_address)->gpio_bank[bank];
+  volatile struct sunxi_gpio_bank *pio = &(sunxi_gpio_registers->gpio_bank[bank]);
   if (val)
     *(&pio->dat) |= 1 << num;
   else
