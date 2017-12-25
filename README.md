@@ -5,6 +5,7 @@ SUNXI Hardware Abstraction Interface Library.
 
 The following interfaces are currently supported:
 * gpio
+* lradc
 * pwm
 * spi
 
@@ -54,6 +55,23 @@ Example to write output pin PA0 with SUNXI_GPIO_PIN_PA0:
 	sunxi_gpio_set_cfgpin(SUNXI_GPIO_PIN_PA0, SUNXI_GPIO_OUTPUT);
 	sunxi_gpio_output(SUNXI_GPIO_PIN_PA0, 1);
 
+### LRADC
+
+Example to read LRADC channel 0:
+
+	sunxi_lradc_init();
+	sunxi_lradc_set_channel(SUNXI_LRADC_CH0);
+	sunxi_lradc_set_key_mode(SUNXI_LRADC_KEY_MODE_NORMAL);
+	sunxi_lradc_set_hold_on(SUNXI_LRADC_HOLD_ON_DISABLE);
+	sunxi_lradc_set_sample_rate(SUNXI_LRADC_SAMPLE_RATE_250HZ);
+	sunxi_lradc_enable();
+	while (1) {
+		unsigned int value;
+		sunxi_lradc_read(SUNXI_LRADC_CH0, &value);
+		printf("value=%d\n", value);
+		sleep(1);
+	}
+    
 ### PWM
 
 Example to generate a 1kHz signal with 30% duty cycle on the first PWM channel:
