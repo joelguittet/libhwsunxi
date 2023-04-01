@@ -15,7 +15,7 @@ Building
 
 Clone sources:
 
-	git clone https://github.com/myfreescalewebpage/libhwsunxi.git && cd libhwsunxi
+	git clone https://github.com/joelguittet/libhwsunxi.git && cd libhwsunxi
 
 Build dynamic library libhwsunxi.so:
 
